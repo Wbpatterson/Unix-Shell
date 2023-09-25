@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cstring>
 #include <string>
-#include <iomanip>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -16,7 +15,7 @@
 */
 
 // prints char*[] elements
-void print(char** arr, int size){
+__attribute__((unused)) void print(char **arr) {
     // cannot use for loop for risk of accessing non existant memory 
     int i = 0;
     while(arr[i] != nullptr){
@@ -41,7 +40,7 @@ enum status{
     ACTIVE
     };
 
-int main(){
+int main(int argc, char* argv[]){
     constexpr int MAX = 50;
     char path[MAX] = "~";
     while(ACTIVE){
@@ -104,7 +103,7 @@ int main(){
         // runs executable commands
         if(cmd_fork == 0){
             execvp(argv[0], argv);
-            perror("error"); // if commnand not found error process returns 
+            perror("error"); // if commnand not found error process returns
             exit(EXIT_FAILURE);
         }
         if(cmd_fork > 0){

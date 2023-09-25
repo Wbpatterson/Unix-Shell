@@ -1,0 +1,4 @@
+/home/wbpatterson/.cache/JetBrains/RemoteDev/dist/61d275c0e2169_CLion-233.6745.300/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/wbpatterson/.cache/JetBrains/RemoteDev/dist/61d275c0e2169_CLion-233.6745.300/bin/ninja/linux/x64/ninja -G Ninja -S /home/wbpatterson/Aggie-Shell -B /home/wbpatterson/Aggie-Shell/cmake-build-debug
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/wbpatterson/Aggie-Shell/cmake-build-debug
