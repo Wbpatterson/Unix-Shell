@@ -210,7 +210,8 @@ int main(int argc, char* argv[]){
             // checks if redirection is detected and acts accordingly 
             if(redirect = findCmd((char*)">", args) > -1){
                 redirection = 1;
-                if(!args[redirect + 1] || size(args) > redirect+1){ // [ls, -la,  >, output.txt, nullptr]
+                int m = size(args);
+                if(!args[redirect + 1] || m > redirect+2){ // [ls, -la,  >, output.txt, nullptr]
                     std::cout << "An error has occurred: No such file or directory\n";
                     continue;
                 }
@@ -219,7 +220,6 @@ int main(int argc, char* argv[]){
                     args[redirect] = nullptr;
                     file_desc = open(redirectFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
                 }
-    
             }
             
             cmd_fork = fork();
