@@ -11,16 +11,6 @@
 #include <fstream>
 
 /*
-    Student Name: Willie Patterson
-    Date: 11/05/2023
-    Class/Section: COMP 350 
-*/
-
-/*
-    At this checkpoint (3), the shell can now take and execute built-in commands, 
-    traditonal unix commands, change the displayed current directory, and redirect to
-    file using > 
-
     NOTE: 
     a copy of the users enviroment varibles has been made for the purposes of 
     this project, so any changes made with the path command will NOT be permanent 
