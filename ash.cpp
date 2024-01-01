@@ -6,19 +6,20 @@
 #include <sys/wait.h>
 #include <algorithm>
 #include <stdlib.h>
-#include <regex>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <fstream>
 
 /*
     Student Name: Willie Patterson
-    Date: 10/01/2023
+    Date: 11/05/2023
     Class/Section: COMP 350 
 */
 
 /*
-    At this checkpoint (2), the shell can now take and execute built-in commands, 
-    traditonal unix commands, aswell as the change the displayed current directory
+    At this checkpoint (3), the shell can now take and execute built-in commands, 
+    traditonal unix commands, change the displayed current directory, and redirect to
+    file using > 
 
     NOTE: 
     a copy of the users enviroment varibles has been made for the purposes of 
@@ -60,22 +61,13 @@ int findCmd(char* cmd, char** arr){
 }
 
 // finds envrioment varible in environ
-int  environFind(char* var){
+int environFind(char* var){
     int var_size = size(environ);
     for(int i = 0; i < var_size; i++){
         if(strncmp(environ[i], var, strlen(var)) == 0)
             return i;
     }
     return -1;
-}
-
-// check if path enviroment variable contains a specified item
-int pathContains(char* regex){
-    int index = environFind((char*)"PATH=");
-    std::regex pattern(regex);
-    std::cmatch matches;
-    std::regex_search(environ[index], matches, pattern);
-    return matches.empty();
 }
 
 char exec_path[100];
@@ -102,13 +94,32 @@ int access(const char* command, char* path){
     return 0;
 }
 
+constexpr int MAX = 1024;
+
+void tokenize(char* input, char** args){
+    char* token = strtok(input, " "); // tokens i.e commands and arguments seperated by spaces
+    std::size_t i = 0; // index for argv
+    // retrieves remaining arguments from input to run command
+    while(token){
+        if(strcmp(token, " ") == 0)
+            continue;
+        args[i] = token;
+        token = strtok(nullptr, " ");
+        i++;
+        }
+}
+
 int redirection = 0;
 char redirectFile[100];
 int file_desc = 0;
 
+int batch_mode = 0;
+char* batch_input[100]{};
+int batch_index = 0;
+
 
 int main(int argc, char* argv[]){
-    constexpr int MAX = 1024;
+    //constexpr int MAX = 1024;
     char path[MAX];
     getcwd(path, MAX); // starts program by showing location of open current dir
 
@@ -118,11 +129,23 @@ int main(int argc, char* argv[]){
     environCopy(enviroment);
     environ = enviroment;  // ensures that enviroment variables on graders computer are not reset 
 
-    while(1){
-        char input[MAX];
-        std::cout << "ash " << path << "> ";
-        std::cin.getline(input, MAX); 
 
+    while(1){
+        int batch_size = size(batch_input);
+        if(batch_mode == 1  && batch_index == batch_size){
+            batch_mode = 0;
+            for (int i = 0; i < batch_size; ++i){
+                delete [] batch_input[i];
+            }
+        }
+
+        char input[MAX];
+
+        if (batch_mode != 1){
+            std::cout << "ash " << path << "> ";
+            std::cin.getline(input, MAX); 
+        }
+        
         // built in exit command
         if(strcmp(input, "exit") == 0){
             std::cout << "Willie Patterson: Aggie Shell" << "\n";
@@ -146,6 +169,16 @@ int main(int argc, char* argv[]){
             token = strtok(nullptr, " ");
             i++;
         }
+
+
+        if(batch_mode == 1){
+            tokenize(batch_input[batch_index], args);
+            batch_index++;
+            //print(args);
+        }
+
+        if (args[0] == nullptr)
+            continue;
 
         //args[i] = nullptr; // ensures char*[] ends with nullptr
         int redirect = 0;
@@ -208,6 +241,28 @@ int main(int argc, char* argv[]){
                     file_desc = open(redirectFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
                 }
             }
+
+            if (strcmp(args[0], "./ash" ) == 0){
+                batch_mode = 1;
+                std::string buffer;
+                std::ifstream file(args[1]);
+
+                if (!file.is_open())
+                    perror("error opening file"); continue;
+
+                int n = 0;
+
+                while (!file.eof()){
+                    batch_input[n] = new char[256];
+                    file.getline(batch_input[n], 256);
+                    n++;
+                }
+
+                file.close();
+                strcpy(input, " ");
+                batch_index = 0;
+                continue;
+            }
             
             cmd_fork = fork();
         }
@@ -220,13 +275,11 @@ int main(int argc, char* argv[]){
                dup2(file_desc, STDERR_FILENO); // standard errors redirected to file
             }
 
-            // char input[100];
-            char* input = new char[100];
+            char input[100];
             strcpy(input, "/");
             strcat(input, args[0]);
             int i = environFind((char*)"PATH="); // finds our PATH Field
             access(input, environ[i]); // finds and checks if variable in our PATH leads to a command
-            delete [] input;
             execv(exec_path, args);
             perror("An error has occurred"); // if commnand not found error process returns
             exit(EXIT_FAILURE);
