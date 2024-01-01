@@ -27,19 +27,6 @@
 */
 
 
-// TO DO: Proper debugging for redirection logic
-
-// prints char*[] elements
-void print(char **arr) {
-    // cannot use for loop for risk of accessing non existant memory 
-    int i = 0;
-    while(arr[i] != nullptr){
-        std::cout << arr[i] << " ";
-        i++;
-    }
-    std::cout << "\n";
-}
-
 // returns the size of an array of char* (char*[size])
 int size(char** arr){
     int i = 0;
