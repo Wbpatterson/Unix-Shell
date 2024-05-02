@@ -1,3 +1,0 @@
-/home/wbpatterson/Aggie-Shell/cmake-build-debug/CMakeFiles/Aggie_Shell.dir
-/home/wbpatterson/Aggie-Shell/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/wbpatterson/Aggie-Shell/cmake-build-debug/CMakeFiles/rebuild_cache.dir
